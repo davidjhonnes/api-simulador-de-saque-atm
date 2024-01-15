@@ -1,0 +1,17 @@
+{
+  "lastRun": "1705339202229-atminsert.ts",
+  "migrations": [
+    {
+      "title": "1705287365288-customerinsert.ts",
+      "timestamp": 1705342088282
+    },
+    {
+      "title": "1705337375669-accountinsert.ts",
+      "timestamp": 1705342088307
+    },
+    {
+      "title": "1705339202229-atminsert.ts",
+      "timestamp": 1705342088324
+    }
+  ]
+}
