@@ -5,4 +5,8 @@ export class CreateWithdrawDto {
   value: number;
   @ApiProperty({ default: '', required: true })
   atm: string;
+  @ApiProperty({ default: 0, required: true })
+  account: number;
+  @ApiProperty({ default: 0, required: true })
+  digitAccount: number;
 }

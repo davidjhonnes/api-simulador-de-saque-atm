@@ -4,8 +4,6 @@ import {
   WithdrawInterface,
 } from './interfaces/withdraw.interface';
 import { MoneyExchangeAvaiable } from '../../schema/moneyexchange.schema';
-import { Atm } from '../../schema/atm.schema';
-import { Transaction } from '../../schema/transaction.schema';
 
 export class WithdrawBusiness implements WithdrawInterface {
   private listNotesAvailable: NotesAvailableToPush = {
@@ -25,11 +23,12 @@ export class WithdrawBusiness implements WithdrawInterface {
   }
   getNotes(
     notes: NotesAvailableToPush,
-    amount: number,
+    totalAmount: number,
     initialBalance: number,
   ): ResultWithDraw {
     let currentBalance: number = initialBalance;
-
+    let amount: number = totalAmount;
+    console.log('saldo atual', initialBalance);
     // Define available notes and their initial quantities
     const withdrawnNotes: NotesAvailableToPush = {};
 
@@ -38,6 +37,7 @@ export class WithdrawBusiness implements WithdrawInterface {
       console.log('Invalid amount or insufficient balance.');
       return;
     }
+    console.log('saldo atual', initialBalance);
 
     // Sort available notes in descending order
     const sortedNotes = Object.keys(notes)
@@ -58,7 +58,11 @@ export class WithdrawBusiness implements WithdrawInterface {
     }
 
     // Update the balance
-    currentBalance -= initialBalance - amount;
+    currentBalance = initialBalance - totalAmount;
+    console.log('initialBalance', initialBalance);
+
+    console.log('currentBalance', currentBalance);
+    console.log('amount amount', amount);
 
     // Display the result
     console.log('Withdrawn notes:');
@@ -72,13 +76,5 @@ export class WithdrawBusiness implements WithdrawInterface {
       withdrawnNotes: withdrawnNotes,
       currentBalance: currentBalance,
     };
-  }
-
-  onTransaction(
-    atm: Atm,
-    accountId: string,
-    transaction: Transaction,
-  ): Transaction {
-    return undefined;
   }
 }

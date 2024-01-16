@@ -3,23 +3,23 @@
   "migrations": [
     {
       "title": "1705287365288-customerinsert.ts",
-      "timestamp": 1705373167179
+      "timestamp": 1705418075938
     },
     {
       "title": "1705337375669-accountinsert.ts",
-      "timestamp": 1705373167223
+      "timestamp": 1705418075973
     },
     {
       "title": "1705339202229-atminsert.ts",
-      "timestamp": 1705373167250
+      "timestamp": 1705418075998
     },
     {
       "title": "1705343619705-moneyexchangeavailableinsert.ts",
-      "timestamp": 1705373167280
+      "timestamp": 1705418076031
     },
     {
       "title": "1705345219854-transationinsert.ts",
-      "timestamp": 1705373167329
+      "timestamp": 1705418076097
     }
   ]
 }

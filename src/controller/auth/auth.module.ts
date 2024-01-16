@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
 import { LoginService } from '../../service/login/login.service';
 import { AuthController } from './auth.controller';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Account, AccountSchema } from '../../schema/account.schema';
 import { Customer, CustomerSchema } from '../../schema/customer.schema';
+import { jwtConstants } from '../../config/contants';
 
 @Module({
   imports: [
@@ -11,6 +13,11 @@ import { Customer, CustomerSchema } from '../../schema/customer.schema';
       { name: Account.name, schema: AccountSchema },
       { name: Customer.name, schema: CustomerSchema },
     ]),
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '10m' },
+    }),
   ],
   controllers: [AuthController],
   providers: [LoginService],

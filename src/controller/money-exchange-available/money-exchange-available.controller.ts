@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  UseFilters,
+  UseFilters, UseGuards,
 } from '@nestjs/common';
 import { MoneyExchangeAvailableService } from '../../service/money-exchange-available/money-exchange-available.service';
 import { CreateMoneyExchangeAvailableDto } from '../../core/dto/money-exchange-available/create-money-exchange-available.dto';
@@ -16,7 +16,8 @@ import { HttpExceptionFilter } from '../../core/dto/errors/http-request-filter';
 import { MoneyExchangeAvailableDto } from '../../core/dto/money-exchange-available/money-exchange-available.dto';
 import { SingleResponseApiDto } from '../../core/dto/response/SingleResponseApiDto';
 import GenericErrorDto from '../../core/dto/errors/generic-errors.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
+import {AuthGuard} from "../auth/auth.guard";
 
 @ApiTags('DISPONIBILIDADE DE NOTAS')
 @Controller('money-exchange-available')
@@ -25,6 +26,7 @@ export class MoneyExchangeAvailableController {
     private readonly moneyExchangeAvailableService: MoneyExchangeAvailableService,
   ) {}
 
+  @ApiBearerAuth('Authorization')
   @Post()
   create(
     @Body() createMoneyExchangeAvailableDto: CreateMoneyExchangeAvailableDto,
@@ -34,6 +36,8 @@ export class MoneyExchangeAvailableController {
     );
   }
 
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
   @Get('checkNotes/:idAtm')
   @ApiOkResponseSingle(MoneyExchangeAvailableDto)
   @UseFilters(new HttpExceptionFilter())
@@ -45,11 +49,15 @@ export class MoneyExchangeAvailableController {
     return this.moneyExchangeAvailableService.findByAtm(idAtm);
   }
 
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.moneyExchangeAvailableService.findOne(+id);
   }
 
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -61,6 +69,8 @@ export class MoneyExchangeAvailableController {
     );
   }
 
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.moneyExchangeAvailableService.remove(+id);

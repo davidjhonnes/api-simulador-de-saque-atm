@@ -8,11 +8,14 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   const config = new DocumentBuilder()
     .setBasePath('api/v1/')
-    .setTitle('Church API Document')
+    .setTitle('API Teste Prático DAVID - GSW/EMBRAER')
     .setDescription('Document API from church integration API')
     .setVersion('1.0')
-
-    // .addTag('account')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'Authorization',
+    )
+    .addTag('health check')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc/swagger', app, document);

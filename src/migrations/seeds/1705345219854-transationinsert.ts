@@ -3,7 +3,7 @@ export const up = async (): Promise<void> => {
   const db = await getDb();
   const collectionAtm = db.collection('Atms');
   const collectionAccount = db.collection('Accounts');
-  const account = await collectionAccount
+  let account = await collectionAccount
     .find({ accountNumber: 1000121 })
     .toArray();
   const atm = await collectionAtm
@@ -11,7 +11,7 @@ export const up = async (): Promise<void> => {
     .toArray();
   const collection = db.collection('Transactions');
 
-  collection.insertOne({
+  await collection.insertOne({
     account: account[0]._id,
     accountNumber: account[0].accountNumber,
     originTransaction: 'atm',
@@ -25,10 +25,11 @@ export const up = async (): Promise<void> => {
     _updatedAt: new Date(),
   });
 
-  await collectionAccount.updateOne(
+  account = await collectionAccount.updateOne(
     { _id: account[0]._id },
     { $set: { currentBalanceAccount: 10000.0 } },
   );
+  console.log('first transaction and updated balance account', account);
 };
 
 export const down = async (): Promise<void> => {
