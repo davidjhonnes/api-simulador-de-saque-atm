@@ -7,26 +7,31 @@ import { Atm } from './atm.schema';
 export class Transaction {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Account' })
   account: Account;
+  @Prop({ required: true })
   originTransaction: {
     type: string;
     enum: ['atm', 'transfer'];
   };
+  @Prop({ required: true })
+  accountNumber: number;
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Atm' })
   atm: Atm;
-  @Prop()
+  @Prop({ required: true })
   typeTransaction: {
     type: string;
     enum: ['credit', 'debit'];
   };
-  @Prop()
+  @Prop({ required: true })
   value: number;
-  @Prop()
+  @Prop({ required: true })
   balanceInCurrentLine: number;
-  @Prop()
+  @Prop({ required: true })
   dateTransaction: number;
-  @Prop()
+  @Prop({ required: true })
   isValid: boolean;
+  @Prop({ required: true, default: new Date() })
   _createdAt: Date;
+  @Prop({ required: true, default: new Date() })
   _updatedAt: Date;
 }
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);

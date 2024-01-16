@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-@Schema()
-export class Customer {
+import { Document } from 'mongoose';
+@Schema({ collection: 'Customers' })
+export class Customer extends Document {
   @Prop({ required: true })
   name: string;
   @Prop({ required: true })
@@ -20,7 +21,6 @@ export class Customer {
   @Prop({ required: true })
   addressComplement: string;
   @Prop({ required: true })
-  @Prop({ required: true })
   addressCep: string;
   @Prop({ required: true })
   addressCity: string;
@@ -28,5 +28,9 @@ export class Customer {
   addressUF: string;
   @Prop({ required: true })
   addressCountry: string;
+  @Prop({ required: true, default: new Date() })
+  _createdAt: Date;
+  @Prop({ required: true, default: new Date() })
+  _updatedAt: Date;
 }
 export const CustomerSchema = SchemaFactory.createForClass(Customer);

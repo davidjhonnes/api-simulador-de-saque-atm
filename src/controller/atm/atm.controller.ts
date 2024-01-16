@@ -1,8 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { AtmService } from '../../service/atm/atm.service';
-import { CreateAtmDto } from '../../core/atm/dto/create-atm.dto';
-import { UpdateAtmDto } from '../../core/atm/dto/update-atm.dto';
-
+import { CreateAtmDto } from '../../core/dto/atm/create-atm.dto';
+import { UpdateAtmDto } from '../../core/dto/atm/update-atm.dto';
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('ATMS (Caixas eletrônicos)')
 @Controller('atm')
 export class AtmController {
   constructor(private readonly atmService: AtmService) {}

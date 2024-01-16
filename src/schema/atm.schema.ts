@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 @Schema()
-export class Atm {
+export class Atm extends Document {
   @Prop({ required: true, unique: true })
   serialCode: string;
   @Prop({ required: true, unique: true })
@@ -17,5 +18,9 @@ export class Atm {
   country: string;
   @Prop({ default: true })
   isActive: boolean;
+  @Prop({ required: true, default: new Date() })
+  _createdAt: Date;
+  @Prop({ required: true, default: new Date() })
+  _updatedAt: Date;
 }
 export const AtmSchema = SchemaFactory.createForClass(Atm);

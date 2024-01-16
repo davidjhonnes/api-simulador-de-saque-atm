@@ -1,22 +1,15 @@
-import { ConfigService } from '@nestjs/config';
-import mongoose, { Connection } from 'mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as process from 'process';
 import 'dotenv/config';
 
 const DataBaseProvider = {
-  provide: 'DATABASE_CONNECTION',
-  async useFactory(config: ConfigService): Promise<Connection> {
-    const user = config.get('MONGODB_USER');
-    const pass = config.get('MONGODB_PASSWORD');
-    const host = config.get('MONGODB_HOST');
-    const port = config.get('MONGODB_PORT');
-    const database = config.get('MONGODB_DATABASE');
-    const uri = `mongodb://${user}:${pass}@${host}/${database}:${port}?retryWrites=true&w=majority`;
-    console.log('URL', uri);
-    const mongConnection = await mongoose.connect(uri);
-
-    return mongConnection.connection;
-  },
+  imports: [ConfigModule],
+  useFactory: async (config: ConfigService) => ({
+    uri: `mongodb://${config.get('MONGODB_USER')}:${config.get('MONGODB_PASSWORD')}@${config.get('MONGODB_HOST')}/${config.get('MONGODB_DATABASE')}:${config.get('MONGODB_PORT')}?retryWrites=true&w=majority&authSource=admin`,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    dbName: config.get('MONGODB_DATABASE'),
+  }),
   inject: [ConfigService],
 };
 
@@ -26,6 +19,7 @@ export const getUrlMongoMigration = () => {
   const host = process.env['MONGODB_HOST'];
   const port = process.env['MONGODB_PORT'];
   const uri = `mongodb://${user}:${pass}@${host}:${port}?retryWrites=true&w=majority`;
+
   return uri;
 };
 

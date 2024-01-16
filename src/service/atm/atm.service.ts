@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAtmDto } from '../../core/atm/dto/create-atm.dto';
-import { UpdateAtmDto } from '../../core/atm/dto/update-atm.dto';
+import { CreateAtmDto } from '../../core/dto/atm/create-atm.dto';
+import { UpdateAtmDto } from '../../core/dto/atm/update-atm.dto';
 
 @Injectable()
 export class AtmService {
