@@ -4,6 +4,7 @@ export type NotesAvailableToPush = { [valor: number]: number };
 export type ResultWithDraw = {
   withdrawnNotes: NotesAvailableToPush;
   currentBalance: number;
+  insufficientNotes: boolean;
 };
 export interface WithdrawInterface {
   checkNotesAvailable: (notes: MoneyExchangeAvaiable) => NotesAvailableToPush;

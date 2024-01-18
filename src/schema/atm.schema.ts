@@ -1,10 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-@Schema()
+import { Document, SchemaTypes, Types } from 'mongoose';
+import { MoneyExchangeAvaiable } from './moneyexchange.schema';
+@Schema({ collection: 'Atms' })
 export class Atm extends Document {
+  @Prop({
+    index: true,
+    type: SchemaTypes.ObjectId,
+    ref: 'MoneyExchangeAvaiable',
+    required: true,
+  })
+  moneyAvailable: string | Types.ObjectId | MoneyExchangeAvaiable;
   @Prop({ required: true, unique: true })
   serialCode: string;
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   name: string;
   @Prop({ required: true })
   address: string;

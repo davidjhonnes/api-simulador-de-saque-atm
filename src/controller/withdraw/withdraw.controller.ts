@@ -4,11 +4,12 @@ import {
   Body,
   UseFilters,
   UseGuards,
-  Request,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { WithdrawService } from '../../service/withdraw/withdraw.service';
 import { CreateWithdrawDto } from '../../core/dto/withdraw/create-withdraw.dto';
-import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiOkResponseSingle } from '../../core/dto/response/ApiOkResponseSingle';
 import { HttpExceptionFilter } from '../../core/dto/errors/http-request-filter';
 import { SingleResponseApiDto } from '../../core/dto/response/SingleResponseApiDto';
@@ -28,8 +29,8 @@ export class WithdrawController {
   @UseGuards(AuthGuard)
   pullMoney(
     @Body() createWithdrawDto: CreateWithdrawDto,
-    @Request() req: Request,
+    @Req() req: Request,
   ): Promise<SingleResponseApiDto<WithdrawDto | GenericErrorDto>> {
-    return this.withdrawService.doWithDraw(createWithdrawDto, req);
+    return this.withdrawService.doWithDraw(createWithdrawDto);
   }
 }

@@ -8,6 +8,7 @@ import { AtmModule } from './controller/atm/atm.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MoneyExchangeAvailableModule } from './controller/money-exchange-available/money-exchange-available.module';
 import { WithdrawModule } from './controller/withdraw/withdraw.module';
+import { TransactionModule } from './controller/transaction/transaction.module';
 import DataBaseProvider from './config/database.providers';
 
 @Module({
@@ -19,6 +20,7 @@ import DataBaseProvider from './config/database.providers';
     AtmModule,
     MoneyExchangeAvailableModule,
     WithdrawModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -8,6 +8,8 @@ export class AccountDto {
   @ApiResponseProperty()
   accountNumber: number;
   @ApiResponseProperty()
+  cpf: string;
+  @ApiResponseProperty()
   accountNumberDigit: number;
   @ApiResponseProperty()
   currentBalanceAccount: number;

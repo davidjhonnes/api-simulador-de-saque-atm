@@ -4,6 +4,7 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import GenericErrorDto from './generic-errors.dto';
@@ -18,10 +19,25 @@ export class HttpExceptionFilter implements ExceptionFilter {
       error instanceof HttpException
         ? error.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
+
+    const msg =
+      error.cause instanceof GenericErrorDto
+        ? error.cause.message?.replace(/["\\]/g, '')
+        : error?.cause
+          ? error?.cause['message']?.replace(/["\\]/g, '')
+          : error.message?.replace(/["\\]/g, '');
+
+    const friendly =
+      error.cause instanceof GenericErrorDto
+        ? error.cause.friendlyMessage?.replace(/["\\]/g, '')
+        : error?.cause
+          ? error?.cause['friendlyMessage']?.replace(/["\\]/g, '')
+          : error.message?.replace(/["\\]/g, '');
+
     let json = {
-      error: '',
-      message: '',
-      friendlyMsg: '',
+      error: msg,
+      message: msg,
+      friendlyMessage: friendly,
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
@@ -31,22 +47,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
         error: 'InvalidToken',
         statusCode: status,
         message: 'FORBIDEN',
-        friendlyMsg: 'Acesso não autorizado',
+        friendlyMessage: 'Acesso não autorizado',
         timestamp: new Date().toISOString(),
         path: request.url,
       };
     }
     if (status === HttpStatus.NOT_FOUND) {
       json = {
-        error:
-          error.cause instanceof GenericErrorDto
-            ? error.cause.message
-            : error.message,
-        message: error.message,
-        friendlyMsg:
-          error.cause instanceof GenericErrorDto
-            ? error.cause.friendlyMessage
-            : error.message,
+        error: 'NOT FOUND',
+        message: msg,
+        friendlyMessage: friendly,
         statusCode: status,
         timestamp: new Date().toISOString(),
         path: request.url,
@@ -55,66 +65,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
       if (process.env.NODE_ENV === 'production') {
         json = {
-          error:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.message
-              : error.message,
-          message: error.message,
-          friendlyMsg:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.friendlyMessage
-              : error.message,
+          error: 'INTERNAL SERVER ERROR',
+          message: msg,
+          friendlyMessage: friendly,
           statusCode: status,
           timestamp: new Date().toISOString(),
           path: request.url,
         };
       } else {
         json = {
-          error:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.message
-              : error.message,
-          message:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.message
-              : error.message,
-          friendlyMsg:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.friendlyMessage
-              : error.message,
-          statusCode: status,
-          timestamp: new Date().toISOString(),
-          path: request.url,
-        };
-      }
-    }
-    if (status === HttpStatus.BAD_REQUEST) {
-      if (process.env.NODE_ENV === 'production') {
-        json = {
-          error:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.message
-              : error.message,
-          message: error.message,
-          friendlyMsg:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.friendlyMessage
-              : error.message,
-          statusCode: status,
-          timestamp: new Date().toISOString(),
-          path: request.url,
-        };
-      } else {
-        json = {
-          error:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.message
-              : error.message,
-          message: error.message,
-          friendlyMsg:
-            error.cause instanceof GenericErrorDto
-              ? error.cause.friendlyMessage
-              : error.message,
+          error: msg,
+          message: msg,
+          friendlyMessage: friendly,
           statusCode: status,
           timestamp: new Date().toISOString(),
           path: request.url,

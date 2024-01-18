@@ -28,8 +28,8 @@ export class WithdrawBusiness implements WithdrawInterface {
   ): ResultWithDraw {
     let currentBalance: number = initialBalance;
     let amount: number = totalAmount;
-    console.log('saldo atual', initialBalance);
-    // Define available notes and their initial quantities
+    let noMoreNotes: boolean = false;
+    let insufficientNotes: boolean = false;
     const withdrawnNotes: NotesAvailableToPush = {};
 
     // Check if the withdrawal amount is valid
@@ -56,18 +56,24 @@ export class WithdrawBusiness implements WithdrawInterface {
         notes[noteValue] -= quantityOfNotes;
       }
     }
+    // Check if there are no more notes available
+    if (amount > 0) {
+      noMoreNotes = true;
+      insufficientNotes = true;
+      console.log(
+        'Cannot withdraw the requested amount with the available notes.',
+      );
+    }
 
     // Update the balance
     currentBalance = initialBalance - totalAmount;
-    console.log('initialBalance', initialBalance);
-
-    console.log('currentBalance', currentBalance);
-    console.log('amount amount', amount);
 
     // Display the result
     console.log('Withdrawn notes:');
-    for (const note in withdrawnNotes) {
-      console.log(`${withdrawnNotes[note]} note(s) of $${note}.00`);
+    if (!noMoreNotes && !insufficientNotes) {
+      for (const note in withdrawnNotes) {
+        console.log(`${withdrawnNotes[note]} note(s) of $${note}.00`);
+      }
     }
 
     console.log(`Current balance: $${currentBalance}.00`);
@@ -75,6 +81,7 @@ export class WithdrawBusiness implements WithdrawInterface {
     return {
       withdrawnNotes: withdrawnNotes,
       currentBalance: currentBalance,
+      insufficientNotes: insufficientNotes,
     };
   }
 }

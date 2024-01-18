@@ -4,6 +4,8 @@ export class CreateAccountDto {
   customer: string;
   @ApiProperty({ default: '1234567891234', required: true })
   cardNumber: string;
+  @ApiProperty({ default: '1234567891234', required: true })
+  cpf: string;
   @ApiProperty({ default: 100321, required: true })
   accountNumber: number;
   @ApiProperty({ default: 4, required: true })

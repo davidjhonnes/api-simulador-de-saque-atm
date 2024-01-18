@@ -1,4 +1,9 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthenticatedDto } from '../../core/dto/auth/authenticated.dto';
 import { AuthDto } from '../../core/dto/auth/auth.dto';
 import { SingleResponseApiDto } from '../../core/dto/response/SingleResponseApiDto';
@@ -9,10 +14,18 @@ import { Customer } from '../../schema/customer.schema';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import GenericErrorDto from '../../core/dto/errors/generic-errors.dto';
 import { JwtService } from '@nestjs/jwt';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import {
+  confirmPassword,
+  generatePassword,
+} from '../../business-use-case/encryption/encrypt.business';
+import { AuthValidtokenDto } from '../../core/dto/auth/auth.validtoken.dto';
 
 @Injectable()
 export class LoginService {
   constructor(
+    @Inject(REQUEST) private readonly request: Request,
     @InjectModel(Account.name) private model: Model<Account>,
     @InjectModel(Customer.name) private modelCustomer: Model<Customer>,
     private jwtService: JwtService,
@@ -24,14 +37,19 @@ export class LoginService {
     try {
       const account: Account = await this.model
         .findOne({
-          accountNumber: credentials.account,
-          accountNumberDigit: credentials.digit,
-          password: credentials.password,
+          cpf: credentials.cpf,
         })
         .populate('customer', '-_id name lastName', this.modelCustomer)
         .exec();
+      if (!account) {
+        throw new UnauthorizedException();
+      }
+      const isConfirmedPassword = await confirmPassword(
+        credentials?.password,
+        account.password,
+      );
 
-      if (account?.password !== credentials.password) {
+      if (!isConfirmedPassword) {
         throw new UnauthorizedException();
       }
       const completeName = `${account.customer.name} ${account.customer.lastName}`;
@@ -63,6 +81,33 @@ export class LoginService {
     }
   }
 
+  async validateToken(): Promise<SingleResponseApiDto<AuthValidtokenDto>> {
+    try {
+      const user = this.request['user'];
+      const account: Account = await this.model
+        .findOne({ _id: user?.sub })
+        .populate('customer', '-_id name lastName', this.modelCustomer)
+        .exec();
+
+      if (!account?._id) {
+        throw new UnauthorizedException();
+      }
+
+      return new SingleResponseApiDto({ isTokenValid: true }, true, null);
+    } catch (e: any | ExceptionsHandler | Error) {
+      const error: GenericErrorDto = new GenericErrorDto(
+        e?.status,
+        JSON.stringify(e.message),
+        'Erro durante a autenticação',
+      );
+      console.error(error);
+      if (error.errorCode === 401) {
+        throw new UnauthorizedException();
+      } else {
+        throw new BadRequestException(e?.parent, { cause: error });
+      }
+    }
+  }
   findAll() {
     return `This action returns all login`;
   }

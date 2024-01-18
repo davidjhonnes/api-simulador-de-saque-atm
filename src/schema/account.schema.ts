@@ -12,6 +12,8 @@ export class Account extends Document {
   })
   customer: Customer;
   @Prop({ required: true, unique: true })
+  cpf: string;
+  @Prop({ required: true, unique: true })
   cardNumber: string;
   @Prop({ required: true, unique: true })
   accountNumber: number;

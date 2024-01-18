@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 import { CreateWithdrawDto } from '../../core/dto/withdraw/create-withdraw.dto';
 import { SingleResponseApiDto } from '../../core/dto/response/SingleResponseApiDto';
 import GenericErrorDto from '../../core/dto/errors/generic-errors.dto';
@@ -21,6 +23,7 @@ import {
 } from '../../schema/transaction.schema';
 import { TransactionService } from '../transaction/transaction.service';
 import { CreateTransactionDto } from '../../core/dto/transaction/create-transaction.dto';
+import CustomBadRequest from '../../core/dto/errors/CustomBadRequest';
 
 @Injectable()
 export class WithdrawService {
@@ -30,11 +33,11 @@ export class WithdrawService {
     @InjectModel(Account.name) private modelAcc: Model<Account>,
     @InjectModel(MoneyExchangeAvaiable.name)
     private model: Model<MoneyExchangeAvaiable>,
+    @Inject(REQUEST) private readonly request: Request,
     private readonly transactionService: TransactionService,
   ) {}
   async doWithDraw(
     createWithdrawDto: CreateWithdrawDto,
-    request: Request,
   ): Promise<SingleResponseApiDto<WithdrawDto | GenericErrorDto>> {
     try {
       let transaction: Transaction = null;
@@ -42,13 +45,18 @@ export class WithdrawService {
       const moneyNotes: MoneyExchangeAvaiable = await this.model
         .findOne({ atm: createWithdrawDto.atm })
         .exec();
-      const account: Account = await this.modelAcc
-        .findOne({
-          accountNumber: createWithdrawDto.account,
-          accountNumberDigit: createWithdrawDto.digitAccount,
-        })
-        .exec();
 
+      console.log('MONEY', moneyNotes);
+      const account: Account = await this.modelAcc
+        .findById(this.request['user']?.sub)
+        .exec();
+      if (account.currentBalanceAccount < createWithdrawDto.value) {
+        throw new CustomBadRequest(
+          400,
+          new Error('Saldo Insuficiente'),
+          'Saldo Insuficiente',
+        ).getError();
+      }
       const businessWithDraw: WithdrawBusiness = new WithdrawBusiness();
       const notesAvailable: NotesAvailableToPush =
         businessWithDraw.checkNotesAvailable(moneyNotes);
@@ -58,6 +66,14 @@ export class WithdrawService {
         createWithdrawDto.value,
         account.currentBalanceAccount,
       );
+
+      if (notesWithDraw.insufficientNotes) {
+        throw new CustomBadRequest(
+          400,
+          new Error('Notas insuficintes'),
+          'Notas há notas suficientes para sacar o valor desejado',
+        ).getError();
+      }
 
       if (!!notesWithDraw) {
         const transactionDTO: CreateTransactionDto = {
@@ -96,12 +112,10 @@ export class WithdrawService {
         null,
       );
     } catch (e: any | ExceptionsHandler | Error | CastError) {
-      const error: GenericErrorDto = new GenericErrorDto(
-        e?.status,
-        JSON.stringify(e.message),
-        'Erro durante a autenticação',
-      );
-      throw new BadRequestException(e?.parent, { cause: error });
+      throw new CustomBadRequest(
+        e.cause ? e.cause.errorCode : e?.status,
+        e,
+      ).getError();
     }
   }
 }

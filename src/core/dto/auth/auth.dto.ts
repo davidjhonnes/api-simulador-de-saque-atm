@@ -1,12 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthDto {
-  @ApiProperty({ default: 1000121, required: true })
-  account: number;
-  @ApiProperty({ default: 5, required: true })
-  digit: number;
+  @ApiProperty({ default: '80906698081', required: true })
+  cpf: string;
   @ApiProperty({
-    default: 'ec7117851c0e5dbaad4effdb7cd17c050cea88cb',
+    default: '123456',
     required: true,
   })
   password: string;
